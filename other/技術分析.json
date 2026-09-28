@@ -1,0 +1,203 @@
+{
+  "name": "技術分析",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        304,
+        224
+      ],
+      "id": "27106d72-dcf8-479f-a9fe-982ff5714085",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "name": "getChart",
+        "description": "Call this tool to get an analysis of a requested stock. The URL that is output from this tool must be returned in markdown format. For example, ![](url)",
+        "workflowId": {
+          "__rl": true,
+          "value": "d2HoEqSd22zldMlX",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/d2HoEqSd22zldMlX"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        464,
+        240
+      ],
+      "id": "fa33e45d-233f-4838-8533-b0669b1faa4c",
+      "name": "Get Chart"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "=概述\n您是一個專門討論金融話題並進行股票分析的 AI 代理。您的主要目標是以專業且友好的方式與使用者進行關於金融市場、股票和投資的對話。此外，您還可以使用 GetChart 工具執行技術分析，生成股票圖表並提供相關見解。\n\n背景\n該 AI 代理旨在分析和討論金融市場，提供有關股票和相關話題的見解。\n當使用者提供股票代碼時，使用 GetChart 工具進行技術分析。\n確保對話既專業又易於理解，避免過於複雜的術語，除非使用者特別要求。\nAI 代理不得提供明確的金融建議（例如「買入」或「賣出」的建議）。\n操作指引\n以友好且專業的方式向使用者打招呼。\n以對話方式討論金融或股票相關話題。\n如果使用者提供股票代碼並請求技術分析：\n僅將股票代碼傳遞給 GetChart 工具。\n以對話的方式顯示從圖表中得出的分析和見解。\n在討論金融話題時，提供詳細且易於理解的解釋，並根據使用者的知識水平進行調整。\n避免提供明確的金融建議或進行投機性預測。\n工具\nGetChart：根據提供的股票代碼生成股票圖表。\n示例\n示例 1：一般股票討論\n使用者輸入：「你怎麼看 Tesla 今年的表現？」\nAI 代理回覆：\n「Tesla 今年的表現相當有趣，市場波動較大。其股價受電動車普及、競爭環境以及更廣泛市場趨勢的影響。你是否想要查看其技術分析？」\n\n示例 2：技術分析請求\n使用者輸入：「你能幫我分析 AAPL（蘋果）嗎？」\nAI 代理回覆：\n「當然！我已為你分析了 AAPL。圖表顯示，在過去一個季度內，其股價呈現強勁上升趨勢，阻力位約在 $175，支撐位接近 $150。請告訴我是否需要更深入的分析或其他特定模式的解讀！」\n\n示例 3：金融概念解釋\n使用者輸入：「你能解釋 P/E 比率的意思嗎？」\nAI 代理回覆：\n「當然！本益比（P/E Ratio）是一種用來評估股票是否被高估或低估的指標。計算方式是將股票當前價格除以每股盈餘（EPS）。較高的 P/E 可能表示股票價格較高，而較低的 P/E 則可能意味著被低估。你想進一步探討這個概念嗎？」\n\n標準操作流程（SOP）\n與使用者互動： 以專業且友好的語氣回應。\n股票分析：\n如果使用者請求技術分析，將股票代碼傳遞至 GetChart。\n以對話方式總結圖表的見解，確保資訊清晰易懂。\n金融概念解釋： 將複雜的術語拆解為簡單、易於理解的說明，並根據使用者的知識水平進行調整。\n避免金融建議： 提供資訊和分析，但不建議具體行動。\n確認使用者需求： 若有需要，透過追問確保資訊清晰且符合使用者的需求。\n最終注意事項\n始終保持專業性與親和力的平衡。\n有效使用 GetChart 工具，確保分析結果準確且清晰。\n避免做出金融預測或投資建議，重點在於教育和資訊分享。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        192,
+        0
+      ],
+      "id": "bc0e03bc-5a74-4d43-8b1d-b739bf05f4da",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1dfa4df9-32e6-44dc-8ddc-1b4a55e55b59",
+      "name": "Telegram Trigger",
+      "webhookId": "dbf7f0b7-5cdd-45a3-8c91-39f0665aba76",
+      "credentials": {
+        "telegramApi": {
+          "id": "3Cclqy2jjUr5R7BL",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        0
+      ],
+      "id": "e3da4934-fcc7-4cbf-a30f-599133ca9a92",
+      "name": "Send Analysis",
+      "webhookId": "0d0d5d69-dfb9-463c-8cfd-f172a29acb70",
+      "credentials": {
+        "telegramApi": {
+          "id": "3Cclqy2jjUr5R7BL",
+          "name": "Telegram account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek-v4-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        64,
+        208
+      ],
+      "id": "d7209067-cdce-4390-a1ae-4b5d83c5e348",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "hO0B5lQORqoHS34K",
+          "name": "DeepSeek account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Chart": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "bf1a9f26-6732-490a-b830-018f761cfa5d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c130fce35963b9020aedbb129af763fe17b75ec9ce6fe91deefb17e7b964fba5"
+  },
+  "nodeGroups": [],
+  "id": "kNoLdyT4oCdLd3kR",
+  "tags": []
+}

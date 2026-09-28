@@ -1,0 +1,261 @@
+{
+  "name": "Get chartnew",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6e64a1e3-556b-4384-a5f3-462abfd14a61",
+      "name": "Workflow Input Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fdf7e016-7082-4146-9038-454139023990",
+              "name": "response",
+              "value": "={{ $('Technical Analysis').item.json.choices[0].message.content }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "cfc3e8e9-2f87-4a22-a668-e89869f7a3c0",
+      "name": "response"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "GPT-4O"
+        },
+        "text": "=你是一位專業的金融分析師，專門從事股票圖表的技術分析。你的職責是分析提供給你的金融圖表，並提供全面的技術見解，包括K線形態、MACD指標、成交量趨勢以及整體市場情緒。你需要詳細解析圖表，強調關鍵關注點並提供可行的見解。\n\n在分析股票圖表時，請務必包括以下內容：\n\nK線分析：\n\n識別並解釋任何重要的K線形態（例如：多頭吞噬、十字星、錘子線）。\n評論整體趨勢（多頭、空頭或盤整）。\n突出突破或回調區域。\nMACD 分析：\n\n描述MACD線和訊號線的當前狀態（例如：多頭交叉、空頭交叉）。\n討論MACD柱狀圖及其對動能的影響。\n識別MACD與價格走勢之間的任何背離現象。\n成交量分析：\n\n突出交易量的任何顯著變化。\n解釋成交量如何支持或反駁價格變動。\n指出任何異常的成交量飆升，這可能表明機構活動。\n支撐與阻力位：\n\n識別圖表上的關鍵支撐和阻力區域。\n討論這些水平對潛在反轉或突破的重要性。\n可行的見解：\n\n提供明確的買入、賣出或持有策略建議。\n建議近期應關注的事項，包括確認信號或潛在風險。\n其他觀察：\n\n記錄任何與分析相關的形態或指標。\n根據圖表提供市場情緒或其他更廣泛趨勢的見解。\n在分析時，請保持清晰、簡潔並以數據為基礎。你的目標是提供可行的信息，幫助交易者和投資者做出明智的決策。對於你的結論，請務必解釋你的推理過程。",
+        "inputType": "base64",
+        "simplify": false,
+        "options": {
+          "detail": "auto"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        864,
+        0
+      ],
+      "id": "41f62ea7-7e52-4ca4-ba1d-f585f68419c9",
+      "name": "Technical Analysis",
+      "credentials": {
+        "openAiApi": {
+          "id": "kInGnIOwD0tXbMud",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "919265d5-99c7-404c-b95e-97b0fdbac42c",
+      "name": "Download Chart"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.chart-img.com/v2/tradingview/advanced-chart/storage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "8qsrQxOggr6iK8g45uPCRaDJ23FMFYR08qRXE1Hv"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"1W\",\n  \"symbol\": \"={{'NASDAQ:' + $json.ticker}}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "f381033d-9c0b-4f45-9243-9ae27c74b3c6",
+      "name": "Get Chart URL"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cf5f7210-5b54-4f4a-abf7-87873be82df4",
+              "name": "ticker",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ],
+      "id": "0e0c4069-0e5e-422f-b0a6-c513fe0a5580",
+      "name": "Set Ticker"
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "5349094008",
+        "file": "={{ $('Get Chart URL').item.json.url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "399c1346-d613-4792-94eb-346a00719855",
+      "name": "Send Chart",
+      "webhookId": "01b106f6-77ec-4cdd-88f4-6236e0d9c2b5",
+      "credentials": {
+        "telegramApi": {
+          "id": "3Cclqy2jjUr5R7BL",
+          "name": "Telegram account 4"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Workflow Input Trigger": [
+      {
+        "json": {
+          "query": "test stock ticker"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Ticker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Analysis": {
+      "main": [
+        [
+          {
+            "node": "Send Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Chart": {
+      "main": [
+        [
+          {
+            "node": "Technical Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Chart URL": {
+      "main": [
+        [
+          {
+            "node": "Download Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Ticker": {
+      "main": [
+        [
+          {
+            "node": "Get Chart URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Chart": {
+      "main": [
+        [
+          {
+            "node": "response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d0b03d50-0822-47b0-a401-f167030f81d3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c130fce35963b9020aedbb129af763fe17b75ec9ce6fe91deefb17e7b964fba5"
+  },
+  "nodeGroups": [],
+  "id": "d2HoEqSd22zldMlX",
+  "tags": []
+}
