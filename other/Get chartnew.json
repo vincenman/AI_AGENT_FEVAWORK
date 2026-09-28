@@ -102,7 +102,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"1W\",\n  \"symbol\": \"={{ $json.ticker }}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"1W\",\n  \"symbol\": \"{{ $json.ticker }}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
         "options": {
           "response": {
             "response": {
