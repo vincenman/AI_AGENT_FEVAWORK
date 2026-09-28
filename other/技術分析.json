@@ -21,9 +21,9 @@
         "description": "Call this tool to get a technical analysis and chart of a US stock. Pass the ticker symbol, for example AAPL or KO. If you know the listing exchange, include it as EXCHANGE:TICKER (for example NYSE:KO).",
         "workflowId": {
           "__rl": true,
-          "value": "d2HoEqSd22zldMlX",
+          "value": "VitnBr1QJB99rdLJ",
           "mode": "id",
-          "cachedResultUrl": "/workflow/d2HoEqSd22zldMlX"
+          "cachedResultUrl": "/workflow/VitnBr1QJB99rdLJ"
         },
         "workflowInputs": {
           "mappingMode": "defineBelow",
