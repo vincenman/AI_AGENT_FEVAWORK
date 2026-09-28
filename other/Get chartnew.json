@@ -102,7 +102,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"1W\",\n  \"symbol\": \"={{'NASDAQ:' + $json.ticker}}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"theme\": \"dark\",\n  \"interval\": \"1W\",\n  \"symbol\": \"={{ $json.ticker }}\",\n  \"override\": {\n    \"showStudyLastValue\": false\n  },\n  \"studies\": [\n    {\n      \"name\": \"Volume\",\n      \"forceOverlay\": true\n    },\n    {\n      \"name\": \"MACD\",\n      \"override\": {\n        \"Signal.linewidth\": 2,\n        \"Signal.color\": \"rgb(255,65,129)\"\n      }\n    }\n  ]\n}",
         "options": {
           "response": {
             "response": {
@@ -122,22 +122,79 @@
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
+        "url": "https://symbol-search.tradingview.com/symbol_search/v3/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
             {
-              "id": "cf5f7210-5b54-4f4a-abf7-87873be82df4",
-              "name": "ticker",
-              "value": "={{ $json.query }}",
-              "type": "string"
+              "name": "text",
+              "value": "={{ $json.query.split(':').pop() }}"
+            },
+            {
+              "name": "hl",
+              "value": "1"
+            },
+            {
+              "name": "exchange",
+              "value": ""
+            },
+            {
+              "name": "lang",
+              "value": "en"
+            },
+            {
+              "name": "search_type",
+              "value": "stocks"
+            },
+            {
+              "name": "domain",
+              "value": "production"
             }
           ]
         },
-        "options": {}
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            },
+            {
+              "name": "Origin",
+              "value": "https://www.tradingview.com"
+            },
+            {
+              "name": "Referer",
+              "value": "https://www.tradingview.com/"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
       },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
         224,
+        0
+      ],
+      "id": "df82e4df-5707-4bbb-b0ca-e377eca88a72",
+      "name": "Resolve Symbol",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Workflow Input Trigger').first().json;\nconst raw = String(original.query ?? '').trim().toUpperCase();\nif (!raw) { throw new Error('No stock ticker was provided to GetChart'); }\nconst input = $input.first().json;\nlet ticker;\nif (raw.includes(':')) {\n  ticker = raw;\n} else {\n  const clean = (s) => String(s || '').replace(/<[^>]*>/g, '').toUpperCase();\n  const list = Array.isArray(input.symbols) ? input.symbols : [];\n  const usEx = ['NASDAQ', 'NYSE', 'AMEX', 'NYSEARCA', 'BATS', 'OTC'];\n  const hit = list.find((s) => clean(s.symbol) === raw && usEx.includes(String(s.exchange || '').toUpperCase())) || list.find((s) => clean(s.symbol) === raw) || list.find((s) => usEx.includes(String(s.exchange || '').toUpperCase()));\n  const ex = hit && hit.exchange ? String(hit.exchange).toUpperCase() : 'NASDAQ';\n  ticker = ex + ':' + raw;\n}\nreturn [{ json: { ticker } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
         0
       ],
       "id": "0e0c4069-0e5e-422f-b0a6-c513fe0a5580",
@@ -146,7 +203,7 @@
     {
       "parameters": {
         "operation": "sendPhoto",
-        "chatId": "5349094008",
+        "chatId": "={{ $('Workflow Input Trigger').item.json.chatId }}",
         "file": "={{ $('Get Chart URL').item.json.url }}",
         "additionalFields": {}
       },
@@ -167,17 +224,20 @@
       }
     }
   ],
-  "pinData": {
-    "Workflow Input Trigger": [
-      {
-        "json": {
-          "query": "test stock ticker"
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "connections": {
     "Workflow Input Trigger": {
+      "main": [
+        [
+          {
+            "node": "Resolve Symbol",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Symbol": {
       "main": [
         [
           {
